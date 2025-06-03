@@ -1,0 +1,27 @@
+@BaseApiUrl = http://localhost:5001
+@ProductId = 4
+
+### Get all Products
+GET {{BaseApiUrl}}/products/
+
+### Get Product By Id
+GET {{BaseApiUrl}}/products/{{ProductId}}
+
+### Add Product
+POST {{BaseApiUrl}}/products/
+Content-Type: application/json
+{
+  "name": "New Product",
+  "category": "Some Category"
+}
+
+### Update Product By Id
+PUT {{BaseApiUrl}}/products/{{ProductId}}
+Content-Type: application/json
+{
+  "name": "Updated Product",
+  "category": "Some edited Category"
+}
+
+### Delete Product By Id
+DELETE {{BaseApiUrl}}/products/{{ProductId}}
