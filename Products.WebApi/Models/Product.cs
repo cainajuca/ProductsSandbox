@@ -12,4 +12,6 @@ public class Product
 
     [JsonPropertyName("category")]
     public string Category { get; set; }
+    [JsonPropertyName("last-updated-at")]
+    public DateTime LastUpdatedAt { get; set; }
 }

@@ -1,5 +1,6 @@
 using Products.WebApi.Models;
 using Products.WebApi.Repositories;
+using Products.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IProductRepository, ProductInMemoryRepository>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 var app = builder.Build();
 

@@ -1,17 +1,29 @@
 ﻿using Products.WebApi.Models;
+using Products.WebApi.Services;
 
 namespace Products.WebApi.Repositories;
 
 public class ProductInMemoryRepository : IProductRepository
 {
-    private readonly List<Product> _products =
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    private readonly List<Product> _products;
+    private int _nextProductId;
+
+    public ProductInMemoryRepository(IDateTimeProvider dateTimeProvider, IProductValidatorService productValidatorService)
+    {
+        _dateTimeProvider = dateTimeProvider;
+
+        var initialDate = _dateTimeProvider.DateTimeNow;
+        _products =
     [
-        new Product { Id = 1, Name = "Product 1", Category = "Carnes" },
-        new Product { Id = 2, Name = "Product 2", Category = "Congelados" },
-        new Product { Id = 3, Name = "Product 3", Category = "Massas" },
+                new Product { Id = 1, Name = "Product 1", Category = "Carnes", LastUpdatedAt = initialDate },
+                new Product { Id = 2, Name = "Product 2", Category = "Congelados", LastUpdatedAt = initialDate },
+                new Product { Id = 3, Name = "Product 3", Category = "Massas", LastUpdatedAt = initialDate },
     ];
 
-    private int _nextProductId = 3;
+        _nextProductId = _products.Count > 0 ? _products.Max(x => x.Id) : 0;
+    }
 
     public Task<List<Product>> GetProductsAsync()
     {
@@ -31,7 +43,8 @@ public class ProductInMemoryRepository : IProductRepository
         {
             Id = ++_nextProductId,
             Name = product.Name,
-            Category = product.Category
+            Category = product.Category,
+            LastUpdatedAt = _dateTimeProvider.DateTimeNow,
         };
 
         _products.Add(newProduct);
@@ -47,6 +60,7 @@ public class ProductInMemoryRepository : IProductRepository
         {
             existingProduct.Name = product.Name;
             existingProduct.Category = product.Category;
+            existingProduct.LastUpdatedAt = _dateTimeProvider.DateTimeNow;
         }
 
         return Task.FromResult(existingProduct);
