@@ -60,6 +60,9 @@ app.MapPost("/products", async (ProductInputDto input, IProductRepository produc
 {
     try
     {
+        if (string.IsNullOrEmpty(input.Name) || string.IsNullOrEmpty(input.Category))
+            return Results.BadRequest("Product name and category are required.");
+
         var createdProduct = await productRepository.AddProduct(input);
         return Results.Created($"/products/{createdProduct.Id}", createdProduct);
     }
@@ -73,6 +76,9 @@ app.MapPut("/products/{id:int:min(0)}", async (int id, ProductInputDto input, IP
 {
     try
     {
+        if (string.IsNullOrEmpty(input.Name) || string.IsNullOrEmpty(input.Category))
+            return Results.BadRequest("Product name and category are required.");
+
         var updatedProduct = await productRepository.UpdateProductById(id, input);
 
         if (updatedProduct is null)
