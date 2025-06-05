@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IProductValidatorService, ProductValidatorService>();
+
 builder.Services.AddSingleton<IProductRepository, ProductInMemoryRepository>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 

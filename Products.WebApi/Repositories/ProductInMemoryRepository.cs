@@ -6,6 +6,7 @@ namespace Products.WebApi.Repositories;
 public class ProductInMemoryRepository : IProductRepository
 {
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IProductValidatorService _productValidatorService;
 
     private readonly List<Product> _products;
     private int _nextProductId;
@@ -13,14 +14,15 @@ public class ProductInMemoryRepository : IProductRepository
     public ProductInMemoryRepository(IDateTimeProvider dateTimeProvider, IProductValidatorService productValidatorService)
     {
         _dateTimeProvider = dateTimeProvider;
+        _productValidatorService = productValidatorService;
 
         var initialDate = _dateTimeProvider.DateTimeNow;
         _products =
-    [
+            [
                 new Product { Id = 1, Name = "Product 1", Category = "Carnes", LastUpdatedAt = initialDate },
                 new Product { Id = 2, Name = "Product 2", Category = "Congelados", LastUpdatedAt = initialDate },
                 new Product { Id = 3, Name = "Product 3", Category = "Massas", LastUpdatedAt = initialDate },
-    ];
+            ];
 
         _nextProductId = _products.Count > 0 ? _products.Max(x => x.Id) : 0;
     }
@@ -39,6 +41,10 @@ public class ProductInMemoryRepository : IProductRepository
 
     public Task<Product> AddProduct(ProductInputDto product)
     {
+        var isValid = _productValidatorService.IsValid(product);
+        if (!isValid)
+            throw new ArgumentException("Invalid product input data.");
+
         var newProduct = new Product
         {
             Id = ++_nextProductId,
@@ -62,6 +68,10 @@ public class ProductInMemoryRepository : IProductRepository
             existingProduct.Category = product.Category;
             existingProduct.LastUpdatedAt = _dateTimeProvider.DateTimeNow;
         }
+
+        var isValid = _productValidatorService.IsValid(product);
+        if (!isValid)
+            throw new ArgumentException("Invalid product input data.");
 
         return Task.FromResult(existingProduct);
     }
